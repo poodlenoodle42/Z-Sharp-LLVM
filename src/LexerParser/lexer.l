@@ -22,9 +22,16 @@ number      [0-9]
     //yy::location& loc = drv.location;
     loc.step();
 %}
-#.* ; //Comment
+\/\/.* ; //Comment
 [\t \r] loc.step();
-"hello"                 return yy::Parser::make_HELLO("Hello",loc);
+"\n"                    loc.lines(1); return yy::Parser::make_NEWLINE(loc);
+"func"                  return yy::Parser::make_FUNC(loc);
+"("                     return yy::Parser::make_LPAREN(loc);
+")"                     return yy::Parser::make_RPAREN(loc);
+"{"                     return yy::Parser::make_LBRACE(loc);
+"}"                     return yy::Parser::make_RBRACE(loc);
+","                     return yy::Parser::make_COMMA(loc);
+{identifier}            return yy::Parser::make_IDENTIFIER(yytext, loc);
 <<EOF>>                 return yy::Parser::make_YYEOF(loc);
 %%
 

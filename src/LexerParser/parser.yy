@@ -13,10 +13,12 @@
 
 
 %code requires {
+    #include "location.hh"
     #include <string>
     #include <iostream>
-    #include "location.hh"
-
+    #include <memory>
+    #include <vector>
+    #include "AST.hpp"
 
     class ParserDriver;
     namespace yy {class Scanner;}
@@ -41,13 +43,53 @@
     }
 }
 
-%token <std::string> HELLO
-%nterm <std::string> program
+%token FUNC 
+%token LBRACE "{" RBRACE "}" LPAREN "(" RPAREN ")" COMMA ","
+%token NEWLINE "\n"
+%token <std::string> IDENTIFIER
+
+%nterm <AST::StmtPtr> stmt
+%nterm <std::vector<AST::StmtPtr>> stmtList
+%nterm <std::unique_ptr<AST::BlockStmt>> block
+%nterm <std::vector<std::string>> idList
+%nterm <std::unique_ptr<AST::Function>> function
+%nterm top_level_list top_level_item
+
 %start program
 %%
 
-program : HELLO {$$ = $1;} ;
+program: top_level_list;
 
+top_level_list: 
+  top_level_item "\n"
+| top_level_item YYEOF
+;
+
+top_level_item: 
+  function      {drv.getAST().addFunction($1);}
+;
+
+function : FUNC IDENTIFIER "(" idList ")" block {$$ = std::make_unique<AST::Function>($2, $4, $6);}
+;
+
+block :
+  "{" "\n" stmtList "}"     {$$ = std::make_unique<AST::BlockStmt>(@$, $3);}
+| "\n" "{" "\n" stmtList "}"{$$ = std::make_unique<AST::BlockStmt>(@$, $4);}
+;
+
+stmt : block "\n" {$$ = $1;}
+;
+
+stmtList : 
+  stmtList stmt    {auto v = $1; v.push_back($2); $$ = std::move(v);}
+| %empty                {$$ = std::vector<AST::StmtPtr>();}
+;
+
+idList : 
+  idList "," IDENTIFIER {auto v = $1; v.push_back($3); $$ = std::move(v);}
+| IDENTIFIER            {$$ = std::vector<std::string>(); $$.push_back($1);}
+| %empty                {$$ = std::vector<std::string>();}
+;
 %%
 
 void

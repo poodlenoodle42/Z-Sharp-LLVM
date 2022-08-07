@@ -31,7 +31,15 @@ number      [0-9]
 "{"                     return yy::Parser::make_LBRACE(loc);
 "}"                     return yy::Parser::make_RBRACE(loc);
 ","                     return yy::Parser::make_COMMA(loc);
+"+"                     return yy::Parser::make_PLUS(loc);
+"-"                     return yy::Parser::make_MINUS(loc);
+"*"                     return yy::Parser::make_STAR(loc);
+"/"                     return yy::Parser::make_SLASH(loc);
+"!"                     return yy::Parser::make_NOT(loc);
 {identifier}            return yy::Parser::make_IDENTIFIER(yytext, loc);
+{number}*\.{number}+    return yy::Parser::make_DOUBLE_LITERAL(std::stod(yytext), loc);
+{number}+\.{number}*    return yy::Parser::make_DOUBLE_LITERAL(std::stod(yytext), loc);
+{number}+               return yy::Parser::make_INTEGER_LITERAL(std::atoi(yytext), loc);
 <<EOF>>                 return yy::Parser::make_YYEOF(loc);
 %%
 

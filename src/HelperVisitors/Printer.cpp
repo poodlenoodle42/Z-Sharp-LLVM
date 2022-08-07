@@ -18,8 +18,7 @@ namespace Visitor {
             std::cout << "  |-> ";
             st->accept(*this);
         }
-        
-
+    
         indentation--;
     }
 
@@ -27,13 +26,17 @@ namespace Visitor {
         indentation++;
 
         std::cout << "Function " << func.getName() << "(";
-        std::stringstream arguments;
-        for (const auto& arg : func.getArguments()) {
-            arguments << arg << ",";
+        if (func.getArguments().size() > 0) {
+            std::stringstream arguments;
+            for (const auto& arg : func.getArguments()) {
+                arguments << arg << ",";
+            }
+            auto argumentsStr = arguments.str();
+            argumentsStr.pop_back();
+            std::cout << argumentsStr << ")\n";
+        } else {
+            std::cout << ")\n";
         }
-        auto argumentsStr = arguments.str();
-        argumentsStr.pop_back();
-        std::cout << argumentsStr << ")\n";
         printIndent();
         std::cout << "  |-> ";
         func.body->accept(*this);
@@ -41,7 +44,52 @@ namespace Visitor {
     }
 
     void Printer::visitExprStmt(AST::ExprStmt& stmt) {
-
+        stmt.expr->accept(*this);
     }
 
+
+    void Printer::visitBinary(AST::BinaryExpr& expr) {
+        indentation++;
+        std::cout << "Binary ";
+        switch (expr.getType()) {
+            case AST::BinaryExpr::Type::PLUS: std::cout << "+"; break;
+            case AST::BinaryExpr::Type::MINUS: std::cout << "-"; break;
+            case AST::BinaryExpr::Type::MULT: std::cout << "*"; break;
+            case AST::BinaryExpr::Type::DIV: std::cout << "/"; break;
+            case AST::BinaryExpr::Type::EQUALSEQUALS: std::cout << "=="; break;
+        }
+        std::cout << "\n";
+        printIndent();
+        std::cout << "  |-> ";
+        expr.left->accept(*this);
+        printIndent();
+        std::cout << "  |-> ";
+        expr.right->accept(*this);
+        //std::cout << "\n";
+        indentation--;
+        //printIndent();
+    }
+
+
+    void Printer::visitUnary(AST::UnaryExpr& expr) {
+        indentation++;
+        std::cout << "Unary ";
+        switch (expr.getType()) {
+            case AST::UnaryExpr::Type::NEGATE: std::cout << "-"; break;
+            case AST::UnaryExpr::Type::NOT: std::cout << "!"; break;
+        }
+        std::cout << "\n";
+        printIndent();
+        std::cout << "  |-> ";
+        expr.expr->accept(*this);
+        indentation--;
+    }
+
+    void Printer::visitNumberLiteral(AST::NumberLiteral& expr) {
+        switch (expr.getType()) {
+            case AST::NumberLiteral::Type::DOUBLE: std::cout << expr.getDouble(); break;
+            case AST::NumberLiteral::Type::INTEGER: std::cout << expr.getInt(); break;
+        }
+        std::cout << "\n";
+    }
 }

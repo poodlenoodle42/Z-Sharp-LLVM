@@ -45,10 +45,19 @@
 
 %token FUNC 
 %token LBRACE "{" RBRACE "}" LPAREN "(" RPAREN ")" COMMA ","
+%token PLUS "+" MINUS "-" STAR "*" SLASH "/" NOT "!"
 %token NEWLINE "\n"
 %token <std::string> IDENTIFIER
+%token <double> DOUBLE_LITERAL
+%token <int>    INTEGER_LITERAL
+%token UNARY
+
+%left PLUS MINUS
+%left STAR SLASH
+%left UNARY
 
 %nterm <AST::StmtPtr> stmt
+%nterm <AST::ExprPtr> expr
 %nterm <std::vector<AST::StmtPtr>> stmtList
 %nterm <std::unique_ptr<AST::BlockStmt>> block
 %nterm <std::vector<std::string>> idList
@@ -69,7 +78,13 @@ top_level_item:
   function      {drv.getAST().addFunction($1);}
 ;
 
+
 function : FUNC IDENTIFIER "(" idList ")" block {$$ = std::make_unique<AST::Function>($2, $4, $6);}
+;
+
+stmt : 
+  block "\n" {$$ = $1;}
+| expr "\n"  {$$ = std::make_unique<AST::ExprStmt>(@$, $1);}
 ;
 
 block :
@@ -77,8 +92,17 @@ block :
 | "\n" "{" "\n" stmtList "}"{$$ = std::make_unique<AST::BlockStmt>(@$, $4);}
 ;
 
-stmt : block "\n" {$$ = $1;}
+expr :
+  expr "+" expr {$$ = std::make_unique<AST::BinaryExpr>(@$, $1, $3, AST::BinaryExpr::Type::PLUS);}
+| expr "-" expr {$$ = std::make_unique<AST::BinaryExpr>(@$, $1, $3, AST::BinaryExpr::Type::MINUS);}
+| expr "*" expr {$$ = std::make_unique<AST::BinaryExpr>(@$, $1, $3, AST::BinaryExpr::Type::MULT);}
+| expr "/" expr {$$ = std::make_unique<AST::BinaryExpr>(@$, $1, $3, AST::BinaryExpr::Type::DIV);}
+| "-" expr %prec UNARY     {$$ = std::make_unique<AST::UnaryExpr>(@$, $2, AST::UnaryExpr::Type::NEGATE);}
+| "!" expr %prec UNARY     {$$ = std::make_unique<AST::UnaryExpr>(@$, $2, AST::UnaryExpr::Type::NOT);}
+| INTEGER_LITERAL {$$ = std::make_unique<AST::NumberLiteral>(@$, $1);}
+| DOUBLE_LITERAL  {$$ = std::make_unique<AST::NumberLiteral>(@$, $1);}
 ;
+
 
 stmtList : 
   stmtList stmt    {auto v = $1; v.push_back($2); $$ = std::move(v);}

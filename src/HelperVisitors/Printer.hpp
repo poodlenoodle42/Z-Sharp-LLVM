@@ -15,6 +15,7 @@ namespace Visitor {
             void visitStringLiteral(AST::StringLiteral& expr) override;
             void visitBoolLiteral(AST::BoolLiteral& expr) override;
             void visitIdentifier(AST::Identifier& expr) override;
+            void visitCallExpr(AST::CallExpr& expr) override;
     };
 
 };

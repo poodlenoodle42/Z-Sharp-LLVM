@@ -57,6 +57,10 @@ namespace Visitor {
             case AST::BinaryExpr::Type::MULT: std::cout << "*"; break;
             case AST::BinaryExpr::Type::DIV: std::cout << "/"; break;
             case AST::BinaryExpr::Type::EQUALSEQUALS: std::cout << "=="; break;
+            case AST::BinaryExpr::Type::GREATER: std::cout << ">"; break;
+            case AST::BinaryExpr::Type::LESS: std::cout << "<"; break;
+            case AST::BinaryExpr::Type::GREATER_EQUALS: std::cout << ">="; break;
+            case AST::BinaryExpr::Type::LESS_EQUALS: std::cout << "<="; break;
         }
         std::cout << "\n";
         printIndent();
@@ -103,5 +107,16 @@ namespace Visitor {
 
     void Printer::visitIdentifier(AST::Identifier& expr) {
         std::cout << "Identifier: " << expr.getString() << "\n";
+    }
+
+    void Printer::visitCallExpr(AST::CallExpr& expr) {
+        indentation++;
+        std::cout << "Call " << expr.getCallee() << "\n";
+        for(const auto& arg : expr.arguments) {
+            printIndent();
+            std::cout << "  |-> ";
+            arg->accept(*this);
+        }
+        indentation--;
     }
 }

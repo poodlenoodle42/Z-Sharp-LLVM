@@ -24,7 +24,10 @@ namespace AST {
                 MULT,
                 DIV,
                 EQUALSEQUALS,
-
+                GREATER,
+                LESS,
+                GREATER_EQUALS,
+                LESS_EQUALS
             };
         private:
             Type type;
@@ -95,5 +98,15 @@ namespace AST {
             Identifier(yy::location loc, std::string&& name) : Expression(loc), name(std::move(name)) {}
             void accept(Visitor& vis) override {vis.visitIdentifier(*this);}
             std::string_view getString() const {return name;}
+    };
+
+    class CallExpr : public Expression {
+        std::string callee;
+        public:
+            std::vector<ExprPtr> arguments;
+            CallExpr(yy::location loc, std::string&& callee, std::vector<ExprPtr> arguments) 
+                : Expression(loc), callee(std::move(callee)), arguments(std::move(arguments)) {}
+            void accept(Visitor& vis) override {vis.visitCallExpr(*this);}
+            std::string_view getCallee() const {return callee;}
     };
 };

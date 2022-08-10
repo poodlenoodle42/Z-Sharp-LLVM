@@ -38,6 +38,11 @@ number      [0-9]
 "*"                     return yy::Parser::make_STAR(loc);
 "/"                     return yy::Parser::make_SLASH(loc);
 "!"                     return yy::Parser::make_NOT(loc);
+"=="                    return yy::Parser::make_EQUALSEQUALS(loc);
+">"                     return yy::Parser::make_GREATER(loc);
+"<"                     return yy::Parser::make_LESS(loc);
+">="                    return yy::Parser::make_GREATEREQUALS(loc);
+"<="                    return yy::Parser::make_LESSEQUALS(loc);
 \"([^\\\"]|\\.)*\"      {std::string s = yytext; return yy::Parser::make_STRING_LITERAL(s.substr(1,s.size()-2),loc);}
 {identifier}            return yy::Parser::make_IDENTIFIER(yytext, loc);
 {number}*\.{number}+    return yy::Parser::make_DOUBLE_LITERAL(std::stod(yytext), loc);

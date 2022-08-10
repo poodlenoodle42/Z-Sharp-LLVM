@@ -45,7 +45,7 @@
 
 %token FUNC 
 %token LBRACE "{" RBRACE "}" LPAREN "(" RPAREN ")" COMMA ","
-%token PLUS "+" MINUS "-" STAR "*" SLASH "/" NOT "!"
+%token PLUS "+" MINUS "-" STAR "*" SLASH "/" NOT "!" EQUALSEQUALS "==" GREATER ">" LESS "<" GREATEREQUALS ">=" LESSEQUALS "<="
 %token NEWLINE "\n"
 %token FALSE TRUE
 %token <std::string> IDENTIFIER
@@ -54,6 +54,7 @@
 %token <std::string> STRING_LITERAL
 %token UNARY
 
+%left LESS GREATER EQUALSEQUALS LESSEQUALS GREATEREQUALS
 %left PLUS MINUS
 %left STAR SLASH
 %left UNARY
@@ -63,6 +64,7 @@
 %nterm <std::vector<AST::StmtPtr>> stmtList
 %nterm <std::unique_ptr<AST::BlockStmt>> block
 %nterm <std::vector<std::string>> idList
+%nterm <std::vector<AST::ExprPtr>> argList
 %nterm <std::unique_ptr<AST::Function>> function
 %nterm top_level_list top_level_item
 
@@ -84,6 +86,7 @@ top_level_item:
 
 
 function : FUNC IDENTIFIER "(" idList ")" block {$$ = std::make_unique<AST::Function>($2, $4, $6);}
+| FUNC IDENTIFIER "(" idList ")" "\n" block {$$ = std::make_unique<AST::Function>($2, $4, $7);}
 ;
 
 stmt : 
@@ -93,7 +96,6 @@ stmt :
 
 block :
   "{" "\n" stmtList "}"     {$$ = std::make_unique<AST::BlockStmt>(@$, $3);}
-| "\n" "{" "\n" stmtList "}"{$$ = std::make_unique<AST::BlockStmt>(@$, $4);}
 ;
 
 expr :
@@ -101,8 +103,14 @@ expr :
 | expr "-" expr {$$ = std::make_unique<AST::BinaryExpr>(@$, $1, $3, AST::BinaryExpr::Type::MINUS);}
 | expr "*" expr {$$ = std::make_unique<AST::BinaryExpr>(@$, $1, $3, AST::BinaryExpr::Type::MULT);}
 | expr "/" expr {$$ = std::make_unique<AST::BinaryExpr>(@$, $1, $3, AST::BinaryExpr::Type::DIV);}
+| expr "==" expr {$$ = std::make_unique<AST::BinaryExpr>(@$, $1, $3, AST::BinaryExpr::Type::EQUALSEQUALS);}
+| expr ">" expr {$$ = std::make_unique<AST::BinaryExpr>(@$, $1, $3, AST::BinaryExpr::Type::GREATER);}
+| expr "<" expr {$$ = std::make_unique<AST::BinaryExpr>(@$, $1, $3, AST::BinaryExpr::Type::LESS);}
+| expr ">=" expr {$$ = std::make_unique<AST::BinaryExpr>(@$, $1, $3, AST::BinaryExpr::Type::GREATER_EQUALS);}
+| expr "<=" expr {$$ = std::make_unique<AST::BinaryExpr>(@$, $1, $3, AST::BinaryExpr::Type::LESS_EQUALS);}
 | "-" expr %prec UNARY     {$$ = std::make_unique<AST::UnaryExpr>(@$, $2, AST::UnaryExpr::Type::NEGATE);}
 | "!" expr %prec UNARY     {$$ = std::make_unique<AST::UnaryExpr>(@$, $2, AST::UnaryExpr::Type::NOT);}
+| IDENTIFIER "(" argList ")" {$$ = std::make_unique<AST::CallExpr>(@$, $1, $3);}
 | INTEGER_LITERAL {$$ = std::make_unique<AST::NumberLiteral>(@$, $1);}
 | DOUBLE_LITERAL  {$$ = std::make_unique<AST::NumberLiteral>(@$, $1);}
 | STRING_LITERAL  {$$ = std::make_unique<AST::StringLiteral>(@$, $1);}
@@ -114,6 +122,7 @@ expr :
 
 stmtList : 
   stmtList stmt    {auto v = $1; v.push_back($2); $$ = std::move(v);}
+| stmtList "\n"    {$$ = $1;}
 | %empty                {$$ = std::vector<AST::StmtPtr>();}
 ;
 
@@ -122,6 +131,11 @@ idList :
 | IDENTIFIER            {$$ = std::vector<std::string>(); $$.push_back($1);}
 | %empty                {$$ = std::vector<std::string>();}
 ;
+
+argList : 
+  argList "," expr      {auto v = $1; v.push_back($3); $$ = std::move(v);}
+| expr                  {$$ = std::vector<AST::ExprPtr>(); $$.push_back($1);}
+| %empty                {$$ = std::vector<AST::ExprPtr>();}
 %%
 
 void

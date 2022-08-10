@@ -11,6 +11,7 @@ namespace AST {
     class StringLiteral;
     class BoolLiteral;
     class Identifier;
+    class CallExpr;
     class Visitor {
         public:
             virtual void visitFunction(Function& stmt) = 0;
@@ -23,5 +24,6 @@ namespace AST {
             virtual void visitStringLiteral(StringLiteral& expr) = 0;
             virtual void visitBoolLiteral(BoolLiteral& expr) = 0;
             virtual void visitIdentifier(Identifier& expr) = 0;
+            virtual void visitCallExpr(CallExpr& expr) = 0;
     };
 };

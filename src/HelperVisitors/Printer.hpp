@@ -5,13 +5,16 @@ namespace Visitor {
         int indentation = -1;
         void printIndent();
         public:
-            void visitFunction(AST::Function& func);
-            void visitBloc(AST::BlockStmt& stmt);
-            void visitExprStmt(AST::ExprStmt& stmt);
+            void visitFunction(AST::Function& func) override;
+            void visitBloc(AST::BlockStmt& stmt) override;
+            void visitExprStmt(AST::ExprStmt& stmt) override;
 
-            void visitBinary(AST::BinaryExpr& expr);
-            void visitUnary(AST::UnaryExpr& expr);
-            void visitNumberLiteral(AST::NumberLiteral& expr);
+            void visitBinary(AST::BinaryExpr& expr) override;
+            void visitUnary(AST::UnaryExpr& expr) override;
+            void visitNumberLiteral(AST::NumberLiteral& expr) override;
+            void visitStringLiteral(AST::StringLiteral& expr) override;
+            void visitBoolLiteral(AST::BoolLiteral& expr) override;
+            void visitIdentifier(AST::Identifier& expr) override;
     };
 
 };

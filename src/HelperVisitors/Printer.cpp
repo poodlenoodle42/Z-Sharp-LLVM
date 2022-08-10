@@ -92,4 +92,16 @@ namespace Visitor {
         }
         std::cout << "\n";
     }
+
+    void Printer::visitStringLiteral(AST::StringLiteral& expr) {
+        std::cout << "String: " << expr.getString() << "\n";
+    }
+
+    void Printer::visitBoolLiteral(AST::BoolLiteral& expr) {
+        std::cout << "Bool: " << (expr.getValue() ? "true" : "false") << "\n";
+    }
+
+    void Printer::visitIdentifier(AST::Identifier& expr) {
+        std::cout << "Identifier: " << expr.getString() << "\n";
+    }
 }

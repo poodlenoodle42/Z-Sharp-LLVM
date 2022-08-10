@@ -47,9 +47,11 @@
 %token LBRACE "{" RBRACE "}" LPAREN "(" RPAREN ")" COMMA ","
 %token PLUS "+" MINUS "-" STAR "*" SLASH "/" NOT "!"
 %token NEWLINE "\n"
+%token FALSE TRUE
 %token <std::string> IDENTIFIER
 %token <double> DOUBLE_LITERAL
 %token <int>    INTEGER_LITERAL
+%token <std::string> STRING_LITERAL
 %token UNARY
 
 %left PLUS MINUS
@@ -70,8 +72,10 @@
 program: top_level_list;
 
 top_level_list: 
-  top_level_item "\n"
-| top_level_item YYEOF
+  top_level_list top_level_item "\n"
+| top_level_list top_level_item YYEOF
+| top_level_list "\n"
+| %empty
 ;
 
 top_level_item: 
@@ -101,6 +105,10 @@ expr :
 | "!" expr %prec UNARY     {$$ = std::make_unique<AST::UnaryExpr>(@$, $2, AST::UnaryExpr::Type::NOT);}
 | INTEGER_LITERAL {$$ = std::make_unique<AST::NumberLiteral>(@$, $1);}
 | DOUBLE_LITERAL  {$$ = std::make_unique<AST::NumberLiteral>(@$, $1);}
+| STRING_LITERAL  {$$ = std::make_unique<AST::StringLiteral>(@$, $1);}
+| IDENTIFIER      {$$ = std::make_unique<AST::Identifier>(@$, $1);}
+| TRUE            {$$ = std::make_unique<AST::BoolLiteral>(@$, true);}
+| FALSE           {$$ = std::make_unique<AST::BoolLiteral>(@$, false);}
 ;
 
 

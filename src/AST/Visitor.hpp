@@ -8,6 +8,9 @@ namespace AST {
     class BinaryExpr;
     class UnaryExpr;
     class NumberLiteral;
+    class StringLiteral;
+    class BoolLiteral;
+    class Identifier;
     class Visitor {
         public:
             virtual void visitFunction(Function& stmt) = 0;
@@ -17,5 +20,8 @@ namespace AST {
             virtual void visitBinary(BinaryExpr& expr) = 0;
             virtual void visitUnary(UnaryExpr& expr) = 0;
             virtual void visitNumberLiteral(NumberLiteral& expr) = 0;
+            virtual void visitStringLiteral(StringLiteral& expr) = 0;
+            virtual void visitBoolLiteral(BoolLiteral& expr) = 0;
+            virtual void visitIdentifier(Identifier& expr) = 0;
     };
 };

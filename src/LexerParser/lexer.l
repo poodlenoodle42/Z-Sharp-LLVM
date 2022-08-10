@@ -26,6 +26,8 @@ number      [0-9]
 [\t \r] loc.step();
 "\n"                    loc.lines(1); return yy::Parser::make_NEWLINE(loc);
 "func"                  return yy::Parser::make_FUNC(loc);
+"false"                 return yy::Parser::make_FALSE(loc);
+"true"                  return yy::Parser::make_TRUE(loc);
 "("                     return yy::Parser::make_LPAREN(loc);
 ")"                     return yy::Parser::make_RPAREN(loc);
 "{"                     return yy::Parser::make_LBRACE(loc);
@@ -36,6 +38,7 @@ number      [0-9]
 "*"                     return yy::Parser::make_STAR(loc);
 "/"                     return yy::Parser::make_SLASH(loc);
 "!"                     return yy::Parser::make_NOT(loc);
+\"([^\\\"]|\\.)*\"      {std::string s = yytext; return yy::Parser::make_STRING_LITERAL(s.substr(1,s.size()-2),loc);}
 {identifier}            return yy::Parser::make_IDENTIFIER(yytext, loc);
 {number}*\.{number}+    return yy::Parser::make_DOUBLE_LITERAL(std::stod(yytext), loc);
 {number}+\.{number}*    return yy::Parser::make_DOUBLE_LITERAL(std::stod(yytext), loc);

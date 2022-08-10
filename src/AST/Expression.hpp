@@ -72,4 +72,28 @@ namespace AST {
             int getInt() const {return i;}
             double getDouble() const {return d;}
     };
+
+    class StringLiteral : public Expression {
+        std::string string;
+        public:
+            StringLiteral(yy::location loc, std::string&& string) : Expression(loc), string(std::move(string)) {}
+            void accept(Visitor& vis) override {vis.visitStringLiteral(*this);}
+            std::string_view getString() const {return string;}
+    };
+
+    class BoolLiteral : public Expression {
+        bool value;
+        public:
+            BoolLiteral(yy::location loc, bool value) : Expression(loc), value(value) {}
+            void accept(Visitor& vis) override {vis.visitBoolLiteral(*this);}
+            bool getValue() const {return value;}
+    };
+
+    class Identifier : public Expression {
+        std::string name;
+        public:
+            Identifier(yy::location loc, std::string&& name) : Expression(loc), name(std::move(name)) {}
+            void accept(Visitor& vis) override {vis.visitIdentifier(*this);}
+            std::string_view getString() const {return name;}
+    };
 };

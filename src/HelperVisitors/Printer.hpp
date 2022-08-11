@@ -8,6 +8,7 @@ namespace Visitor {
             void visitFunction(AST::Function& func) override;
             void visitBloc(AST::BlockStmt& stmt) override;
             void visitExprStmt(AST::ExprStmt& stmt) override;
+            void visitIfStmt(AST::IfStmt& stmt) override;
 
             void visitBinary(AST::BinaryExpr& expr) override;
             void visitUnary(AST::UnaryExpr& expr) override;

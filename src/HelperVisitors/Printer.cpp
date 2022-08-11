@@ -47,6 +47,24 @@ namespace Visitor {
         stmt.expr->accept(*this);
     }
 
+    void Printer::visitIfStmt(AST::IfStmt& stmt) {
+        indentation++;
+        std::cout << "If\n";
+        printIndent();
+        std::cout << "  |-> ";
+        stmt.expression->accept(*this);
+        printIndent();
+        std::cout << "then> ";
+        stmt.ifStmt->accept(*this);
+        if (stmt.elseStmt) {
+            printIndent();
+            std::cout << "else> ";
+            (*stmt.elseStmt)->accept(*this);
+        } 
+
+
+        indentation--;
+    }
 
     void Printer::visitBinary(AST::BinaryExpr& expr) {
         indentation++;

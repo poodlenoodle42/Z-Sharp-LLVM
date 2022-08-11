@@ -47,6 +47,7 @@
 %token LBRACE "{" RBRACE "}" LPAREN "(" RPAREN ")" COMMA ","
 %token PLUS "+" MINUS "-" STAR "*" SLASH "/" NOT "!" EQUALSEQUALS "==" GREATER ">" LESS "<" GREATEREQUALS ">=" LESSEQUALS "<="
 %token NEWLINE "\n"
+%token IF ELSE
 %token FALSE TRUE
 %token <std::string> IDENTIFIER
 %token <double> DOUBLE_LITERAL
@@ -66,6 +67,9 @@
 %nterm <std::vector<std::string>> idList
 %nterm <std::vector<AST::ExprPtr>> argList
 %nterm <std::unique_ptr<AST::Function>> function
+
+%nterm <std::unique_ptr<AST::IfStmt>> ifstmt
+
 %nterm top_level_list top_level_item
 
 %start program
@@ -92,10 +96,23 @@ function : FUNC IDENTIFIER "(" idList ")" block {$$ = std::make_unique<AST::Func
 stmt : 
   block "\n" {$$ = $1;}
 | expr "\n"  {$$ = std::make_unique<AST::ExprStmt>(@$, $1);}
+| ifstmt "\n"{$$ = $1;}
 ;
 
 block :
   "{" "\n" stmtList "}"     {$$ = std::make_unique<AST::BlockStmt>(@$, $3);}
+//| "\n" "{" "\n" stmtList "}"     {$$ = std::make_unique<AST::BlockStmt>(@$, $4);}
+;
+
+ifstmt : 
+  IF expr block             {$$ = std::make_unique<AST::IfStmt>(@$, $2, $3);}
+| IF expr "\n" block             {$$ = std::make_unique<AST::IfStmt>(@$, $2, $4);}
+| IF expr block ELSE block  {$$ = std::make_unique<AST::IfStmt>(@$, $2, $3, $5);}
+| IF expr "\n" block ELSE block  {$$ = std::make_unique<AST::IfStmt>(@$, $2, $4, $6);}
+| IF expr block ELSE "\n" block  {$$ = std::make_unique<AST::IfStmt>(@$, $2, $3, $6);}
+| IF expr "\n" block ELSE "\n" block  {$$ = std::make_unique<AST::IfStmt>(@$, $2, $4, $7);}
+| IF expr "\n" block ELSE ifstmt  {$$ = std::make_unique<AST::IfStmt>(@$, $2, $4, $6);}
+| IF expr block ELSE ifstmt  {$$ = std::make_unique<AST::IfStmt>(@$, $2, $3, $5);}
 ;
 
 expr :
@@ -123,7 +140,7 @@ expr :
 stmtList : 
   stmtList stmt    {auto v = $1; v.push_back($2); $$ = std::move(v);}
 | stmtList "\n"    {$$ = $1;}
-| %empty                {$$ = std::vector<AST::StmtPtr>();}
+| %empty           {$$ = std::vector<AST::StmtPtr>();}
 ;
 
 idList : 

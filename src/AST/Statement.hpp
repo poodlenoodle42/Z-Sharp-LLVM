@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <optional>
 
 namespace AST {
     class Statement {
@@ -33,5 +34,19 @@ namespace AST {
             ExprPtr expr;
             ExprStmt(yy::location loc, ExprPtr expr) : Statement(loc), expr(std::move(expr)) {}
             void accept(Visitor& vis) override {vis.visitExprStmt(*this);}
+    };
+
+    class IfStmt : public Statement {
+        public:
+            ExprPtr expression;
+            StmtPtr ifStmt;
+            std::optional<StmtPtr> elseStmt;
+            IfStmt(yy::location loc, ExprPtr expr, StmtPtr ifStmt, StmtPtr elseStmt) 
+                : Statement(loc), expression(std::move(expr)), ifStmt(std::move(ifStmt)), elseStmt(std::move(elseStmt)) {}
+            IfStmt(yy::location loc, ExprPtr expr, StmtPtr ifStmt)
+                : Statement(loc), expression(std::move(expr)), ifStmt(std::move(ifStmt)), elseStmt() {}
+
+            void accept(Visitor& vis) override {vis.visitIfStmt(*this);}
+            
     };
 };

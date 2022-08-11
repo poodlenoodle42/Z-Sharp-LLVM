@@ -4,6 +4,7 @@ namespace AST {
     class Function;
     class BlockStmt;
     class ExprStmt;
+    class IfStmt;
 
     class BinaryExpr;
     class UnaryExpr;
@@ -17,6 +18,7 @@ namespace AST {
             virtual void visitFunction(Function& stmt) = 0;
             virtual void visitBloc(BlockStmt& stmt) = 0;
             virtual void visitExprStmt(ExprStmt& stmt) = 0;
+            virtual void visitIfStmt(IfStmt& stmt) = 0;
 
             virtual void visitBinary(BinaryExpr& expr) = 0;
             virtual void visitUnary(UnaryExpr& expr) = 0;

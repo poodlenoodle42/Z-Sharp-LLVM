@@ -28,6 +28,8 @@ number      [0-9]
 "func"                  return yy::Parser::make_FUNC(loc);
 "false"                 return yy::Parser::make_FALSE(loc);
 "true"                  return yy::Parser::make_TRUE(loc);
+"if"                    return yy::Parser::make_IF(loc);
+"else"                  return yy::Parser::make_ELSE(loc);
 "("                     return yy::Parser::make_LPAREN(loc);
 ")"                     return yy::Parser::make_RPAREN(loc);
 "{"                     return yy::Parser::make_LBRACE(loc);

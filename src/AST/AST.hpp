@@ -13,7 +13,7 @@ namespace AST {
         public:
             std::unique_ptr<BlockStmt> body;
             Function(std::string&& functionName, const std::vector<std::string>& argumentNames, std::unique_ptr<BlockStmt> body)
-                : functionName(std::move(functionName)), argumentNames(std::move(argumentNames)), body(std::move(body)) {}
+                : argumentNames(std::move(argumentNames)), functionName(std::move(functionName)), body(std::move(body)) {}
             void accept(Visitor& vis) {vis.visitFunction(*this);}
             const std::vector<std::string>& getArguments() const {return argumentNames;}
             const std::string& getName() const {return functionName;}

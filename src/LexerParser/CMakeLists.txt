@@ -26,3 +26,8 @@ target_include_directories(LexerParser PRIVATE
                             ${FLEX_INCLUDE_DIRS}
                             ${CMAKE_CURRENT_BINARY_DIR}
                             )  
+if(MSVC)
+    target_compile_options(LexerParser PRIVATE /W4 /WX)
+else()
+    target_compile_options(LexerParser PRIVATE -Wall -Wextra -Wpedantic)
+endif()

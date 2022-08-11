@@ -51,5 +51,5 @@ number      [0-9]
 <<EOF>>                 return yy::Parser::make_YYEOF(loc);
 %%
 
-yy::Scanner::Scanner(ParserDriver& driver) : driver(driver), yyFlexLexer(&std::cin) {loc.initialize(&driver.get_file_name());}
-yy::Scanner::Scanner(ParserDriver& driver, std::istream& in) : driver(driver), yyFlexLexer(&in) {loc.initialize(&driver.get_file_name());} 
+yy::Scanner::Scanner(ParserDriver& driver) : yyFlexLexer(&std::cin), driver(driver) {loc.initialize(&driver.get_file_name());}
+yy::Scanner::Scanner(ParserDriver& driver, std::istream& in) : yyFlexLexer(&in), driver(driver) {loc.initialize(&driver.get_file_name());} 

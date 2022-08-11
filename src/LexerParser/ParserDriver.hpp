@@ -16,8 +16,8 @@ public:
     const std::string& get_file_name() const {return file_name;}
     AST::AST& getAST() {return tree;}
 private:
-    yy::Parser* parser;
     yy::Scanner* scanner;
+    yy::Parser* parser;
 
     std::string file_name;
     AST::AST tree;

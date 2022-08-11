@@ -8,7 +8,7 @@ namespace AST {
     class Expression {
         yy::location location;
         public:
-            Expression(yy::location loc) : location(location) {}
+            Expression(yy::location loc) : location(loc) {}
             inline yy::location getLocation() {return location;}
             virtual ~Expression() {}
             virtual void accept(Visitor& vis) = 0;
@@ -34,7 +34,7 @@ namespace AST {
         public:
             ExprPtr left, right;
             BinaryExpr(yy::location loc, ExprPtr left, ExprPtr right, Type type) 
-                : Expression(loc), left(std::move(left)), right(std::move(right)), type(type) {}
+                : Expression(loc), type(type), left(std::move(left)), right(std::move(right)) {}
             void accept(Visitor& vis) override {vis.visitBinary(*this);}
             Type getType() const {return type;}
     };
@@ -50,7 +50,7 @@ namespace AST {
         public:
             ExprPtr expr;
             UnaryExpr(yy::location loc, ExprPtr expr, Type type) 
-                : Expression(loc), expr(std::move(expr)), type(type) {}
+                : Expression(loc), type(type), expr(std::move(expr)) {}
             void accept(Visitor& vis) override {vis.visitUnary(*this);}
             Type getType() const {return type;}
     };

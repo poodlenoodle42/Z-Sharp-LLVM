@@ -3,6 +3,7 @@
 #include <fstream>
 #include "ParserDriver.hpp"
 #include "Printer.hpp"
+#include "Type.hpp"
 int main(int argc, char** argv) {
     std::string inputFilename("test.zs");
     std::ifstream file_stream(inputFilename);

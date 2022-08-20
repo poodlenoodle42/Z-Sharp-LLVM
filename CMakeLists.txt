@@ -12,7 +12,7 @@ add_definitions(${LLVM_DEFINITIONS_LIST})
 add_subdirectory(src)
 
 add_executable(ZSharpLLVM src/main.cpp)
-target_link_libraries(ZSharpLLVM LexerParser HelperVisitors)
+target_link_libraries(ZSharpLLVM LexerParser HelperVisitors SymbolTable)
 set_property(TARGET ZSharpLLVM PROPERTY CXX_STANDARD 17)
 set_property(TARGET ZSharpLLVM PROPERTY ENABLE_EXPORTS 1)
 
